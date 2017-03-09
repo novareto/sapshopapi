@@ -2,6 +2,7 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
+from cached_property import timed_cached_property
 from zope.component import getUtility
 from .interfaces import ISAPShopConnection
 
@@ -16,7 +17,7 @@ class ArticleItem(object):
         """ Return the Client"""
         return getUtility(ISAPShopConnection)
 
-    @property
+    @timed_cached_property(ttl=5)
     def price(self):
         """ Return Price Information"""
         return self.client.price()
