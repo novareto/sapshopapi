@@ -13,6 +13,7 @@ requirements = [
     'zope.component',
     'zope.interface',
     'cached-property',
+    'suds-jurko',
 ]
 
 test_requirements = [

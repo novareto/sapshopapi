@@ -14,12 +14,8 @@ from zope import component, interface
 
 
 @interface.implementer(interfaces.ISAPShopConnection)
-class Connection(object):
+class Connection(sapshopapi.SAPAPI):
     """ Example Connection """
-
-    def price(self):
-        """i  """
-        return 1.0
 
 
 def setup_module(module):
@@ -28,10 +24,15 @@ def setup_module(module):
     component.provideUtility(connection, interfaces.ISAPShopConnection, '')
 
 
-class TestSAPShop(object):
+class TestAPI(object):
 
-    def test_article(self):
-        """Sample pytest test function with the pytest fixture as an argument.
-        """
-        article = sapshopapi.ArticleItem()
-        assert article.price == 1.0
+    def test_thing(self):
+        api = component.getUtility(interfaces.ISAPShopConnection)
+        article = api.getArticle('000000000000120171')
+        assert isinstance(article, sapshopapi.Article) is True
+        assert article.matnr == '000000000000120171'
+
+
+def test_all_items():
+    all_items = sapshopapi.getAllItems()
+    assert isinstance(all_items, list) is True
