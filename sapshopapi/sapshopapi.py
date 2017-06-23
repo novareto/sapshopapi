@@ -2,23 +2,52 @@
 # Copyright (c) 2007-2013 NovaReto GmbH
 # cklinger@novareto.de
 
-from cached_property import timed_cached_property
+import logging
+
 from zope.component import getUtility
 from .interfaces import ISAPShopConnection
-from collections import namedtuple
-
-AI = namedtuple('AllItems', ('matnr'))
 
 
-BASE_URL = "http://SVASAPXQAS.BG10.BGFE.LOCAL:8000/sap/bc/srt/wsdl/flv_10002A111AD1/bndg_url/sap/bc/srt/rfc/sap/"
-SEARCH_URL = "zws_etemweb_suche/050/zws_etemweb_suche/zws_etemweb_suche?sap-client=050"
-ITEM_URL = "zws_etemweb_artikel/050/zws_etemweb_artikel/zws_etemweb_artikel?sap-client=050"
-ALL_ITEMS_URL = "zws_etemweb_all_items/050/zws_etemweb_all_items/zws_etemweb_all_items?sap-client=050"
+log = logging.getLogger('sapshopapi')
+
+
+class ArticleMixin(object):
+
+    def __init__(self):
+        matnr = self.getArticleNumber()
+        self._article = getArticle(matnr)
+
+    def getArticleNumber():
+        raise NotImplementedError
+
+    def getArticle(self, matnr):
+        raise NotImplementedError
+
+    @property
+    def matnr(self):
+        return self._article.matnr
+
+    @property
+    def title(self):
+        return self._article.title
+
+    @property
+    def description(self):
+        return self._article.description
+
+    @property
+    def preis(self):
+        return self._article.preis
+
+    @property
+    def preis_mem(self):
+        return self._article.preis_mem
 
 
 class Article(object):
 
-    def __init__(self, matnr, title, description, preis, preis_mem):
+    def __init__(self,
+                 matnr, title="", description="", preis=0.0, preis_mem=0.0):
         self.matnr = matnr
         self.title = title
         self.description = description
@@ -29,17 +58,22 @@ class Article(object):
 class SAPAPI(object):
     """ Example Connection """
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            log.info("Setting the following API-URL-Endpoints %s %s" % (k, v))
+            setattr(self, k, v)
+
     def client(self, MET_URL):
         from suds.client import Client
         client = Client(
-            BASE_URL + MET_URL,
+            self.BASE_URL + MET_URL,
             username="xxwsn",
             password="novareto"
         )
         return client
 
     def getArticle(self, matnr):
-        client = self.client(ITEM_URL)
+        client = self.client(self.ITEM_URL)
         article = client.service.Z_ETEM_WS_ARTIKEL(matnr)
         return Article(
             matnr=matnr,
@@ -50,15 +84,20 @@ class SAPAPI(object):
         )
 
     def getAllItems(self):
-        client = self.client(ALL_ITEMS_URL)
-        results = [y for x, y in client.service.Z_ETEM_WS_ALL_ITEMS()['ET_MATLIST']][0]
+        client = self.client(self.ALL_ITEMS_URL)
+        results = [y for x, y in client.service.Z_ETEM_WS_ALL_ITEMS()[
+            'ET_MATLIST']][0]
         rc = []
         for x in results:
-            rc.append(AI(x.MATNR))
+            rc.append(Article(x.MATNR))
         return rc
-
 
 
 def getAllItems():
     client = getUtility(ISAPShopConnection)
     return client.getAllItems()
+
+
+def getArticle(matnr):
+    client = getUtility(ISAPShopConnection)
+    return client.getArticle(matnr)

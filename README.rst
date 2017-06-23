@@ -21,20 +21,14 @@ sapshopapi
 API for communicating with SAP-SHOP-API
 
 
-* Free software: MIT license
-* Documentation: https://sapshopapi.readthedocs.io.
-
 
 Features
 --------
 
-* TODO
+* Working out a Strategy for retrieving a cache based list from the Service
+* getArticle Out of Something
 
 Credits
 ---------
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-
+ Christian Klinger (ck@novaret.de)

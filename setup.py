@@ -12,7 +12,7 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'zope.component',
     'zope.interface',
-    'cached-property',
+    'plone.memoize',
     'suds-jurko',
 ]
 
