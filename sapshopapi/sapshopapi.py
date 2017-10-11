@@ -13,7 +13,7 @@ log = logging.getLogger('sapshopapi')
 
 class ArticleMixin(object):
 
-    def __init__(self):
+    def load(self):
         matnr = self.getArticleNumber()
         self._article = getArticle(matnr)
 
