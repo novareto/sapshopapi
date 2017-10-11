@@ -14,6 +14,8 @@ requirements = [
     'zope.interface',
     'plone.memoize',
     'suds-jurko',
+    'pytest',
+    'zeep',
 ]
 
 test_requirements = [

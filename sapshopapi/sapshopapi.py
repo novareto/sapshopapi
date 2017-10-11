@@ -64,11 +64,15 @@ class SAPAPI(object):
             setattr(self, k, v)
 
     def client(self, MET_URL):
-        from suds.client import Client
+        from requests import Session
+        from requests.auth import HTTPBasicAuth
+        from zeep import Client
+        from zeep.transports import Transport
+        session = Session()
+        session.auth = HTTPBasicAuth("xxwsn", "novareto")
         client = Client(
             self.BASE_URL + MET_URL,
-            username="xxwsn",
-            password="novareto"
+            transport=Transport(session=session)
         )
         return client
 
@@ -85,8 +89,7 @@ class SAPAPI(object):
 
     def getAllItems(self):
         client = self.client(self.ALL_ITEMS_URL)
-        results = [y for x, y in client.service.Z_ETEM_WS_ALL_ITEMS()[
-            'ET_MATLIST']][0]
+        results = client.service.Z_ETEM_WS_ALL_ITEMS().ET_MATLIST.item
         rc = []
         for x in results:
             rc.append(Article(x.MATNR))

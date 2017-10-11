@@ -49,7 +49,7 @@ class TestAPI(object):
 def test_all_items():
     all_items = sapshopapi.getAllItems()
     assert isinstance(all_items, list) is True
-    assert len(all_items) == 1743
+    assert len(all_items) == 1742
     all_items = sapshopapi.getAllItems()
 
 
