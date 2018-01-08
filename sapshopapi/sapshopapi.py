@@ -47,12 +47,17 @@ class ArticleMixin(object):
 class Article(object):
 
     def __init__(self,
-                 matnr, title="", description="", preis=0.0, preis_mem=0.0):
+                 matnr, title="",
+                 description="",
+                 preis=0.0,
+                 preis_mem=0.0,
+                 medienart=""):
         self.matnr = matnr
         self.title = title
         self.description = description
         self.preis = preis
         self.preis_mem = preis_mem
+        self.medienart = medienart
 
 
 class SAPAPI(object):
@@ -78,18 +83,18 @@ class SAPAPI(object):
 
     def getArticle(self, matnr):
         client = self.client(self.ITEM_URL)
-        article = client.service.Z_ETEM_WS_ARTIKEL(matnr)
+        article = client.service.Z_ETEM_IMP_ARTIKEL(matnr)
         return Article(
             matnr=matnr,
-            title=article.EX_TITLE,
-            description=article.EX_DESCR,
+            title=article.EX_DESCR,
             preis=article.EX_PRICEEXT,
-            preis_mem=article.EX_PRICEMEM
+            preis_mem=article.EX_PRICEMEM,
+            medienart=article.EX_WARENGRUPPE
         )
 
     def getAllItems(self):
         client = self.client(self.ALL_ITEMS_URL)
-        results = client.service.Z_ETEM_WS_ALL_ITEMS().ET_MATLIST.item
+        results = client.service.Z_ETEM_IMP_ALL_ITEMS().ET_MATLIST.item
         rc = []
         for x in results:
             rc.append(Article(x.MATNR))
