@@ -5,6 +5,10 @@
 import logging
 
 from zope.component import getUtility
+from requests import Session
+from requests.auth import HTTPBasicAuth
+from zeep import Client
+from zeep.transports import Transport
 from .interfaces import ISAPShopConnection
 
 
@@ -69,10 +73,6 @@ class SAPAPI(object):
             setattr(self, k, v)
 
     def client(self, MET_URL):
-        from requests import Session
-        from requests.auth import HTTPBasicAuth
-        from zeep import Client
-        from zeep.transports import Transport
         session = Session()
         session.auth = HTTPBasicAuth("xxwsn", "novareto")
         client = Client(
@@ -100,6 +100,96 @@ class SAPAPI(object):
             rc.append(Article(x.MATNR))
         return rc
 
+    def getUser(self, email, art="R"):
+        client = self.client(self.GET_USER_URL)
+        user = client.service.Z_ETEM_IMP_GET_USER(IP_USER=email)
+        if art == "R":
+            return user.ET_ADRESSLIST.item[0]
+        return user.ET_ADRESSLIST.item[1]
+
+    def deleteUser(self, email):
+        client = self.client(self.DELETE_USER_URL)
+        res = client.service.Z_ETEM_IMP_DELETE_USER_REQUEST(IP_USER=email)
+        client = self.client(self.DELETE_USER_URLV)
+        #import pdb; pdb.set_trace() 
+        res = client.service.Z_ETEM_IMP_DELETE_USER_VERIFY(IP_DELCODE="", IP_USER=email)
+        client = cl
+
+    def addUser(self, **kwargs):
+        client = self.client(self.ADD_USER_URL)
+        # Types
+        factory = client.type_factory('ns0')
+        user = factory.ZIMP_S_CREATE_USER(
+            ANRED=kwargs.get('anrede', ''), 
+            NAME1=kwargs.get('name1', ''), 
+            NAME2=kwargs.get('name2', ''), 
+            NAME3=kwargs.get('name3', ''), 
+            NAME4=kwargs.get('name4', ''), 
+            ORT01=kwargs.get('ort', ''), 
+            STRAS=kwargs.get('strasse', ''),
+            PSTLZ=kwargs.get('plz', ''),
+            LAND1=kwargs.get('land', ''),
+            TELF1=kwargs.get('telefon', ''),
+            MITNR=kwargs.get('mnr', ''),
+            ART=kwargs.get('art', ''), 
+            SMTP_ADDR=kwargs.get('email', '')
+        )
+        ul = factory.ZIMP_T_CREATE_USER(item=[user])
+        result = client.service.Z_ETEM_IMP_CREATE_USER(IP_PASSWORD=kwargs.get('passwort'), IT_USER=ul)
+        return result
+
+    def updateUser(self, **kwargs):
+        client = self.client(self.UPDATE_USER_URL)
+        factory = client.type_factory('ns0')
+        user = factory.ZIMP_S_UPDATE_USER(
+            ANRED=kwargs.get('anrede', ''), 
+            NAME1=kwargs.get('name1', ''), 
+            NAME2=kwargs.get('name2', ''), 
+            NAME3=kwargs.get('name3', ''), 
+            NAME4=kwargs.get('name4', ''), 
+            ORT01=kwargs.get('ort', ''), 
+            STRAS=kwargs.get('strasse', ''),
+            PSTLZ=kwargs.get('plz', ''),
+            LAND1=kwargs.get('land', ''),
+            TELF1=kwargs.get('telefon', ''),
+            MITNR=kwargs.get('mnr', ''),
+            ART=kwargs.get('art', ''), 
+        )
+        ul = factory.ZIMP_T_UPDATE_USER(item=[user])
+        result = client.service.Z_ETEM_IMP_UPDATE_USER(IP_USER=kwargs.get('email'), IT_ADRESS=ul)
+        return result
+
+    def resetPassword(self, email):
+        client = self.client(self.RESET_PASSWORD_URL)
+        result = client.service.Z_ETEM_IMP_RESET_PASSWORD(IP_USER=email)
+        return result
+
+    def updatePassword(self, email, old_password, new_password):
+        client = self.client(self.UPDATE_PASSWORD_URL)
+        result = client.service.Z_ETEM_IMP_UPDATE_PASSWORD(IP_USER=email, IP_PASSWORD=old_password, IP_NEWPASSWORD=new_password)
+        return result
+
+    def getPassword(self, email, password):
+        client = self.client(self.GET_PASSWORD_URL)
+        result = client.service.Z_ETEM_IMP_GET_PASSWORD(IP_USER=email, IP_PASSWORD=password)
+        if result.EX_MESSAGE == u'Login g\xfcltig':
+            return True
+        return False
+
+    def createOrder(self, email, password, artikel):
+        client = self.client(self.CREATE_ORDER_URL)
+        factory = client.type_factory('ns0')
+        s_artikel = []
+        for art in artikel:
+            s_artikel.append(
+                factory.ZIMP_S_ORDER(
+                    MATNR=art.get('matnr'),
+                    MENGE=art.get('menge')
+                )
+            )
+        order = factory.ZIMP_T_ORDER(item=s_artikel)
+        result = client.service.Z_ETEM_IMP_CREATE_ORDER(IP_PASSWORD=password, IP_USER=email, IT_ORDER=order)
+        import pdb; pdb.set_trace()
 
 def getAllItems():
     client = getUtility(ISAPShopConnection)
