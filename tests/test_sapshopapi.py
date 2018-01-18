@@ -37,6 +37,34 @@ def setup_module(module):
     component.provideUtility(connection, interfaces.ISAPShopConnection, '')
 
 
+
+def addUser():
+    api = component.getUtility(interfaces.ISAPShopConnection)
+    result = api.addUser(
+        anrede="Herr",
+        name1="Klinger",
+        name2="Christian",
+        name3="Novareto",
+        name4="GmbH",
+        plz="90619",
+        ort="Fuerth",
+        strasse="Karonlinenstr. 17",
+        land="DE",
+        email="ck@novareto.de",
+        art="R",
+        mitnr="12345678",
+        passwort="K1e2test"
+    )
+
+
+def deleteAll(email):
+    api = component.getUtility(interfaces.ISAPShopConnection)
+    URL = "http://SVASAPXQAS.BG10.BGFE.LOCAL:8000/sap/bc/srt/wsdl/flv_10002A111AD1/srvc_url/sap/bc/srt/rfc/sap/zws_etem_imp_masterdelete/050/zws_etem_imp_masterdelete/zws_etem_imp_masterdelete?sap-client=050"
+    client = api.client(URL)
+    result = client.service.Z_ETEM_IMP_MASTERDELETE(IP_USER=email)
+    return result
+
+
 class TestAPI(object):
 
     def test_direct(self):
@@ -92,7 +120,7 @@ class TestUser(object):
             plz="90619",
             ort="Fuerth",
             strasse="Karonlinenstr. 17",
-            land="DEU",
+            land="DE",
             email="ck@novareto.de",
             art="R",
             mitnr="12345678",
@@ -133,7 +161,7 @@ class TestUser(object):
             plz="90619",
             ort="Fuerth",
             strasse="Karonlinenstr. 17",
-            land="DEU",
+            land="DE",
             email="ck@novareto.de",
             art="R",
             mitnr="12345678",
@@ -153,16 +181,29 @@ class TestUser(object):
             plz="90619",
             ort="Fuerth",
             strasse="Karonlinenstr. 17",
-            land="DEU",
+            land="DE",
             email="ck@novareto.de",
             art="R",
             mitnr="12345678",
             passwort="K1e2test"
         )
 
+    @classmethod 
+    def teardown_class(cls):
+        deleteAll('ck@novareto.de')
+
 
 class TestOrder():
 
+    @classmethod 
+    def setup_class(cls):
+        addUser()
+
+    @classmethod 
+    def teardown_class(cls):
+        deleteAll('ck@novareto.de')
+
     def test_order(self):
         api = component.getUtility(interfaces.ISAPShopConnection)
-        api.createOrder(email="ck@novareto.de", password="K1e2test", artikel=[{'matnr':'AB010', 'menge':"1"}])
+        result = api.createOrder(email="ck@novareto.de", password="K1e2test", artikel=[{'matnr':'AB010', 'menge':"1"}])
+        assert result.EX_VBELN is not None

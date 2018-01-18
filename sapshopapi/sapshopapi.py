@@ -189,7 +189,7 @@ class SAPAPI(object):
             )
         order = factory.ZIMP_T_ORDER(item=s_artikel)
         result = client.service.Z_ETEM_IMP_CREATE_ORDER(IP_PASSWORD=password, IP_USER=email, IT_ORDER=order)
-        import pdb; pdb.set_trace()
+        return result
 
 def getAllItems():
     client = getUtility(ISAPShopConnection)
@@ -199,3 +199,7 @@ def getAllItems():
 def getArticle(matnr):
     client = getUtility(ISAPShopConnection)
     return client.getArticle(matnr)
+
+
+def getAPI():
+    return getUtility(ISAPShopConnection)
