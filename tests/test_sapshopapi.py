@@ -85,7 +85,7 @@ class TestAPI(object):
 def test_all_items():
     all_items = sapshopapi.getAllItems()
     assert isinstance(all_items, list) is True
-    assert len(all_items) == 310
+    assert len(all_items) == 335 
     all_items = sapshopapi.getAllItems()
 
 
@@ -206,4 +206,5 @@ class TestOrder():
     def test_order(self):
         api = component.getUtility(interfaces.ISAPShopConnection)
         result = api.createOrder(email="ck@novareto.de", password="K1e2test", artikel=[{'matnr':'AB010', 'menge':"1"}])
+        assert result.EX_MESSAGE == 'Bestellung erfolgreich'
         assert result.EX_VBELN is not None

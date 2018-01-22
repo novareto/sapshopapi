@@ -27,3 +27,6 @@ SETUP
   >>> util = component.getUtility(interfaces.ISAPShopConnection)
   >>> print util
   <__main__.Connection object at ...>
+
+  >>> print sapshopapi.getAPI()
+  <__main__.Connection object at ...>

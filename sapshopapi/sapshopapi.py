@@ -4,11 +4,12 @@
 
 import logging
 
-from zope.component import getUtility
-from requests import Session
-from requests.auth import HTTPBasicAuth
 from zeep import Client
+from requests import Session
+from collections import namedtuple
 from zeep.transports import Transport
+from zope.component import getUtility
+from requests.auth import HTTPBasicAuth
 from .interfaces import ISAPShopConnection
 
 
@@ -73,6 +74,9 @@ class SAPAPI(object):
             setattr(self, k, v)
 
     def client(self, MET_URL):
+        """
+        This method retuns an ZEEP Client you have to Provide the SOAP URL 
+        """
         session = Session()
         session.auth = HTTPBasicAuth("xxwsn", "novareto")
         client = Client(
@@ -136,6 +140,7 @@ class SAPAPI(object):
         )
         ul = factory.ZIMP_T_CREATE_USER(item=[user])
         result = client.service.Z_ETEM_IMP_CREATE_USER(IP_PASSWORD=kwargs.get('passwort'), IT_USER=ul)
+        log.info('Added User %s' % kwargs.get('email'))
         return result
 
     def updateUser(self, **kwargs):
