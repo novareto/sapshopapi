@@ -48,6 +48,14 @@ class ArticleMixin(object):
     def preis_mem(self):
         return self._article.preis_mem
 
+    @property
+    def bestand(self):
+        return self._article.bestand
+
+    @property
+    def freimenge(self):
+        return self._article.freimenge
+
 
 class Article(object):
 
@@ -56,13 +64,17 @@ class Article(object):
                  description="",
                  preis=0.0,
                  preis_mem=0.0,
-                 medienart=""):
+                 medienart="",
+                 bestand = 0.0,
+                 freimenge = 0.0):
         self.matnr = matnr
         self.title = title
         self.description = description
         self.preis = preis
         self.preis_mem = preis_mem
         self.medienart = medienart
+        self.bestand = bestand
+        self.freimenge = freimenge
 
 
 class SAPAPI(object):
@@ -93,7 +105,9 @@ class SAPAPI(object):
             title=article.EX_DESCR,
             preis=article.EX_PRICEEXT,
             preis_mem=article.EX_PRICEMEM,
-            medienart=article.EX_WARENGRUPPE
+            medienart=article.EX_WARENGRUPPE,
+            bestand = article.EX_AMOUNT,
+            freimenge = article.EX_AMOUNT_FREE
         )
 
     def getAllItems(self):
@@ -107,9 +121,12 @@ class SAPAPI(object):
     def getUser(self, email, art="R"):
         client = self.client(self.GET_USER_URL)
         user = client.service.Z_ETEM_IMP_GET_USER(IP_USER=email)
-        if art == "R":
-            return user.ET_ADRESSLIST.item[0]
-        return user.ET_ADRESSLIST.item[1]
+        if user.ET_ADRESSLIST:
+            return user.ET_ADRESSLIST
+            #if art == "R":
+            #    return user.ET_ADRESSLIST.item[0]
+            #return user.ET_ADRESSLIST.item[1]
+        return []
 
     def deleteUser(self, email):
         client = self.client(self.DELETE_USER_URL)
@@ -134,11 +151,29 @@ class SAPAPI(object):
             PSTLZ=kwargs.get('plz', ''),
             LAND1=kwargs.get('land', ''),
             TELF1=kwargs.get('telefon', ''),
-            MITNR=kwargs.get('mnr', ''),
-            ART=kwargs.get('art', ''), 
+            MITNR=kwargs.get('mitnr', ''),
+            ART=u'R', 
+            SMTP_ADDR=kwargs.get('email', '')
+        )
+        v_factory = client.type_factory('ns0')
+        versand = v_factory.ZIMP_S_CREATE_USER(
+            ANRED=kwargs.get('anrede_v', ''),
+            NAME1=kwargs.get('name1_v', ''),
+            NAME2=kwargs.get('name2_v', ''),
+            NAME3=kwargs.get('name3_v', ''),
+            NAME4=kwargs.get('name4_v', ''),
+            ORT01=kwargs.get('ort_v', ''),
+            STRAS=kwargs.get('strasse_v', ''),
+            PSTLZ=kwargs.get('plz_v', ''),
+            LAND1=kwargs.get('land_v', ''),
+            TELF1=kwargs.get('telefon', ''),
+            MITNR=kwargs.get('mitnr', ''),
+            ART=u'V',
             SMTP_ADDR=kwargs.get('email', '')
         )
         ul = factory.ZIMP_T_CREATE_USER(item=[user])
+        if kwargs.get('versand'):
+            ul = factory.ZIMP_T_CREATE_USER(item=[user, versand]) 
         result = client.service.Z_ETEM_IMP_CREATE_USER(IP_PASSWORD=kwargs.get('passwort'), IT_USER=ul)
         log.info('Added User %s' % kwargs.get('email'))
         return result
@@ -157,10 +192,25 @@ class SAPAPI(object):
             PSTLZ=kwargs.get('plz', ''),
             LAND1=kwargs.get('land', ''),
             TELF1=kwargs.get('telefon', ''),
-            MITNR=kwargs.get('mnr', ''),
-            ART=kwargs.get('art', ''), 
+            MITNR=kwargs.get('mitnr', ''),
+            ART=u'R', 
         )
-        ul = factory.ZIMP_T_UPDATE_USER(item=[user])
+        v_factory = client.type_factory('ns0')
+        versand = v_factory.ZIMP_S_UPDATE_USER(
+            ANRED=kwargs.get('anrede_v', ''),
+            NAME1=kwargs.get('name1_v', ''),
+            NAME2=kwargs.get('name2_v', ''),
+            NAME3=kwargs.get('name3_v', ''),
+            NAME4=kwargs.get('name4_v', ''),
+            ORT01=kwargs.get('ort_v', ''),
+            STRAS=kwargs.get('strasse_v', ''),
+            PSTLZ=kwargs.get('plz_v', ''),
+            LAND1=kwargs.get('land_v', ''),
+            TELF1=kwargs.get('telefon', ''),
+            MITNR=kwargs.get('mitnr', ''),
+            ART=u'V',
+        )
+        ul = factory.ZIMP_T_UPDATE_USER(item=[user, versand])
         result = client.service.Z_ETEM_IMP_UPDATE_USER(IP_USER=kwargs.get('email'), IT_ADRESS=ul)
         return result
 
@@ -181,7 +231,7 @@ class SAPAPI(object):
             return True
         return False
 
-    def createOrder(self, email, password, artikel):
+    def createOrder(self, email, artikel):
         client = self.client(self.CREATE_ORDER_URL)
         factory = client.type_factory('ns0')
         s_artikel = []
@@ -193,7 +243,7 @@ class SAPAPI(object):
                 )
             )
         order = factory.ZIMP_T_ORDER(item=s_artikel)
-        result = client.service.Z_ETEM_IMP_CREATE_ORDER(IP_PASSWORD=password, IP_USER=email, IT_ORDER=order)
+        result = client.service.Z_ETEM_IMP_CREATE_ORDER(IP_USER=email, IT_ORDER=order)
         return result
 
 def getAllItems():
