@@ -85,7 +85,7 @@ class TestAPI(object):
 def test_all_items():
     all_items = sapshopapi.getAllItems()
     assert isinstance(all_items, list) is True
-    assert len(all_items) == 335 
+    assert len(all_items) > 100 
     all_items = sapshopapi.getAllItems()
 
 
@@ -127,10 +127,10 @@ class TestUser(object):
             passwort="K1e2test"
         )
         user = api.getUser(email="ck@novareto.de")
+        user = user.item[0]
         assert user.ANRED == "Herr"
         assert user.NAME1 == "Klinger"
         assert user.NAME3 == "Novareto"
-        #delm = api.deleteUser(email="ck@novareto.de")
 
     def test_reset_password(self):
         api = component.getUtility(interfaces.ISAPShopConnection)
@@ -169,6 +169,7 @@ class TestUser(object):
         )
         assert result.EX_MESSAGE == 'Update erfolgreich'
         user = api.getUser(email="ck@novareto.de")
+        user = user.item[0]
         assert user.ANRED == "Herr"
         assert user.NAME1 == "Klinger1"
         assert user.NAME3 == "Novareto1"
@@ -188,23 +189,26 @@ class TestUser(object):
             passwort="K1e2test"
         )
 
-    @classmethod 
+    @classmethod
     def teardown_class(cls):
         deleteAll('ck@novareto.de')
 
 
 class TestOrder():
 
-    @classmethod 
+    @classmethod
     def setup_class(cls):
         addUser()
 
-    @classmethod 
+    @classmethod
     def teardown_class(cls):
         deleteAll('ck@novareto.de')
 
     def test_order(self):
         api = component.getUtility(interfaces.ISAPShopConnection)
-        result = api.createOrder(email="ck@novareto.de", password="K1e2test", artikel=[{'matnr':'AB010', 'menge':"1"}])
+        result = api.createOrder(
+                email="ck@novareto.de",
+                artikel=[{'matnr': 'AB010', 'menge': "1"}]
+                )
         assert result.EX_MESSAGE == 'Bestellung erfolgreich'
         assert result.EX_VBELN is not None
