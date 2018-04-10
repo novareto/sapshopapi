@@ -16,11 +16,23 @@ from .interfaces import ISAPShopConnection
 log = logging.getLogger('sapshopapi')
 
 
+class MyCache(dict):
+    pass
+
+
 class ArticleMixin(object):
 
+    _v_article = None
+
     def load(self):
-        matnr = self.getArticleNumber()
-        self._article = getArticle(matnr)
+        return
+
+    @property
+    def article(self):
+        if self._v_article is None:
+            matnr = self.getArticleNumber()
+            self._v_article = getArticle(matnr)
+        return self._v_article
 
     def getArticleNumber():
         raise NotImplementedError
@@ -30,31 +42,31 @@ class ArticleMixin(object):
 
     @property
     def matnr(self):
-        return self._article.matnr
+        return self.article.matnr
 
     @property
     def title(self):
-        return self._article.title
+        return self.article.title
 
     @property
     def description(self):
-        return self._article.description
+        return self.article.description
 
     @property
     def preis(self):
-        return self._article.preis
+        return self.article.preis
 
     @property
     def preis_mem(self):
-        return self._article.preis_mem
+        return self.article.preis_mem
 
     @property
     def bestand(self):
-        return self._article.bestand
+        return self.article.bestand
 
     @property
     def freimenge(self):
-        return self._article.freimenge
+        return self.article.freimenge
 
 
 class Article(object):
@@ -82,7 +94,7 @@ class SAPAPI(object):
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
-            log.info("Setting the following API-URL-Endpoints %s %s" % (k, v))
+            log.debug("Setting the following API-URL-Endpoints %s %s" % (k, v))
             setattr(self, k, v)
 
     def client(self, MET_URL):
@@ -98,6 +110,7 @@ class SAPAPI(object):
         return client
 
     def getArticle(self, matnr):
+        log.info('Fetching Article %s' % matnr)
         client = self.client(self.ITEM_URL)
         article = client.service.Z_ETEM_IMP_ARTIKEL(matnr)
         return Article(
