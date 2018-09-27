@@ -141,13 +141,17 @@ class SAPAPI(object):
             #return user.ET_ADRESSLIST.item[1]
         return []
 
+    def deleteUserVerify(self, **kwargs):
+        client = self.client(self.DELETE_USER_URLV)
+        res = client.service.Z_ETEM_IMP_DELETE_USER_VERIFY(IP_DELCODE=kwargs.get('delcode'), IP_USER=kwargs.get('email'))
+        log.info('Entfernter User %s' % kwargs.get('email'))
+        return res
+
     def deleteUser(self, email):
         client = self.client(self.DELETE_USER_URL)
         res = client.service.Z_ETEM_IMP_DELETE_USER_REQUEST(IP_USER=email)
-        client = self.client(self.DELETE_USER_URLV)
-        #import pdb; pdb.set_trace() 
-        res = client.service.Z_ETEM_IMP_DELETE_USER_VERIFY(IP_DELCODE="", IP_USER=email)
-        client = cl
+        log.info('Zum Loeschen vorgemerkter Benutzer %s' % email)
+        return res
 
     def addUser(self, **kwargs):
         client = self.client(self.ADD_USER_URL)
