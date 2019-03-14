@@ -25,7 +25,7 @@ class ArticleMixin(object):
     _v_article = None
 
     def load(self):
-        return
+        self._v_article = None
 
     @property
     def article(self):
