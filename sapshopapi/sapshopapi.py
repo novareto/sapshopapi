@@ -3,7 +3,7 @@
 # cklinger@novareto.de
 
 import logging
-
+import decimal
 from zeep import Client
 from requests import Session
 from collections import namedtuple
@@ -111,8 +111,19 @@ class SAPAPI(object):
 
     def getArticle(self, matnr):
         log.info('Fetching Article %s' % matnr)
-        client = self.client(self.ITEM_URL)
-        article = client.service.Z_ETEM_IMP_ARTIKEL(matnr)
+        #client = self.client(self.ITEM_URL)
+        #article = client.service.Z_ETEM_IMP_ARTIKEL(matnr)
+        mokup = Article(
+            matnr=matnr,
+            title='MOKUP',
+            preis=decimal.Decimal(0.15),
+            preis_mem=decimal.Decimal(0.10),
+            medienart='MOKUP',
+            bestand=decimal.Decimal(100),
+            freimenge=decimal.Decimal(10))
+
+        return mokup
+            
         return Article(
             matnr=matnr,
             title=article.EX_DESCR,

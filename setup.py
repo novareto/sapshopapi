@@ -13,7 +13,7 @@ requirements = [
     'zope.component',
     'zope.interface',
     'plone.memoize',
-    'suds-jurko',
+    'suds',
     'pytest',
     'zeep',
 ]
