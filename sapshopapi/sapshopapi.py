@@ -143,6 +143,23 @@ class SAPAPI(object):
         return rc
 
     def getUser(self, email, art="R"):
+        #MOCKUP
+        import random
+        item = {}
+        item['ANRED'] = 'Herr'
+        item['NAME1'] = 'Max Mustermann'
+        item['NAME2'] = 'novareto GmbH'
+        item['NAME3'] = ''
+        item['STRAS'] = 'Karolinenstraße 17'
+        item['PSTLZ'] = '90763'
+        item['ORT01'] = 'Fürth'
+        item['TELF1'] = '0162-2600497'
+        item['MITNR'] = '08154711'
+        item['VERIF'] = random.choice([True, False])
+        itemlist = [item]
+        return {'item':itemlist} 
+        ##
+        
         client = self.client(self.GET_USER_URL)
         user = client.service.Z_ETEM_IMP_GET_USER(IP_USER=email)
         if user.ET_ADRESSLIST:
@@ -253,6 +270,9 @@ class SAPAPI(object):
         return result
 
     def getPassword(self, email, password):
+        #MOCKUP
+        return True
+        ##
         client = self.client(self.GET_PASSWORD_URL)
         result = client.service.Z_ETEM_IMP_GET_PASSWORD(IP_USER=email, IP_PASSWORD=password)
         if result.EX_MESSAGE == u'Login g\xfcltig':
