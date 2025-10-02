@@ -144,22 +144,21 @@ class SAPAPI(object):
 
     def getUser(self, email, art="R"):
         #MOCKUP
-        import random
-        item = {}
-        item['ANRED'] = 'Herr'
-        item['NAME1'] = 'Max Mustermann'
-        item['NAME2'] = 'novareto GmbH'
-        item['NAME3'] = ''
-        item['STRAS'] = 'Karolinenstraße 17'
-        item['PSTLZ'] = '90763'
-        item['ORT01'] = 'Fürth'
-        item['TELF1'] = '0162-2600497'
-        item['MITNR'] = '08154711'
-        item['VERIF'] = random.choice([True, False])
-        itemlist = [item]
-        return {'item':itemlist} 
+        # import random
+        # item = {}
+        # item['ANRED'] = 'Herr'
+        # item['NAME1'] = 'Max Mustermann'
+        # item['NAME2'] = 'novareto GmbH'
+        # item['NAME3'] = ''
+        # item['STRAS'] = 'Karolinenstraße 17'
+        # item['PSTLZ'] = '90763'
+        # item['ORT01'] = 'Fürth'
+        # item['TELF1'] = '0162-2600497'
+        # item['MITNR'] = '08154711'
+        # item['VERIF'] = random.choice([True, False])
+        # itemlist = [item]
+        # return {'item':itemlist}
         ##
-        
         client = self.client(self.GET_USER_URL)
         user = client.service.Z_ETEM_IMP_GET_USER(IP_USER=email)
         if user.ET_ADRESSLIST:
@@ -238,6 +237,7 @@ class SAPAPI(object):
             LAND1=kwargs.get('land', ''),
             TELF1=kwargs.get('telefon', ''),
             MITNR=kwargs.get('mitnr', ''),
+            UNRS=kwargs.get('unrs', ''),
             ART=u'R', 
         )
         v_factory = client.type_factory('ns0')
@@ -253,6 +253,7 @@ class SAPAPI(object):
             LAND1=kwargs.get('land_v', ''),
             TELF1=kwargs.get('telefon', ''),
             MITNR=kwargs.get('mitnr', ''),
+            UNRS=kwargs.get('unrs', ''),
             ART=u'V',
         )
         ul = factory.ZIMP_T_UPDATE_USER(item=[user, versand])
