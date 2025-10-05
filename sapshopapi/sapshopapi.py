@@ -170,18 +170,21 @@ class SAPAPI(object):
         return []
 
     def deleteUserVerify(self, **kwargs):
+        #TODO: MOCKUP
         client = self.client(self.DELETE_USER_URLV)
         res = client.service.Z_ETEM_IMP_DELETE_USER_VERIFY(IP_DELCODE=kwargs.get('delcode'), IP_USER=kwargs.get('email'))
         log.info('Entfernter User %s' % kwargs.get('email'))
         return res
 
     def deleteUser(self, email):
+        #TODO: MOCKUP
         client = self.client(self.DELETE_USER_URL)
         res = client.service.Z_ETEM_IMP_DELETE_USER_REQUEST(IP_USER=email)
         log.info('Zum Loeschen vorgemerkter Benutzer %s' % email)
         return res
 
     def addUser(self, **kwargs):
+        #TODO: MOCKUP
         client = self.client(self.ADD_USER_URL)
         # Types
         factory = client.type_factory('ns0')
@@ -224,6 +227,7 @@ class SAPAPI(object):
         return result
 
     def updateUser(self, **kwargs):
+        #TODO: MOCKUP
         client = self.client(self.UPDATE_USER_URL)
         factory = client.type_factory('ns0')
         user = factory.ZIMP_S_UPDATE_USER(
@@ -260,11 +264,13 @@ class SAPAPI(object):
         return result
 
     def resetPassword(self, email):
+        #TODO: MOCKUP
         client = self.client(self.RESET_PASSWORD_URL)
         result = client.service.Z_ETEM_IMP_RESET_PASSWORD(IP_USER=email)
         return result
 
     def updatePassword(self, email, old_password, new_password):
+        #TODO: MOCKUP
         client = self.client(self.UPDATE_PASSWORD_URL)
         result = client.service.Z_ETEM_IMP_UPDATE_PASSWORD(IP_USER=email, IP_PASSWORD=old_password, IP_NEWPASSWORD=new_password)
         return result
@@ -280,6 +286,7 @@ class SAPAPI(object):
         return False
 
     def createOrder(self, email, artikel):
+        #TODO: MOCKUP
         client = self.client(self.CREATE_ORDER_URL)
         factory = client.type_factory('ns0')
         s_artikel = []
