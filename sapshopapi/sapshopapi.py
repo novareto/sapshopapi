@@ -196,6 +196,7 @@ class SAPAPI(object):
             LAND1=kwargs.get('land', ''),
             TELF1=kwargs.get('telefon', ''),
             MITNR=kwargs.get('mitnr', ''),
+            UNRS=kwargs.get('unrs', ''),
             ART=u'R', 
             SMTP_ADDR=kwargs.get('email', '')
         )
@@ -212,6 +213,7 @@ class SAPAPI(object):
             LAND1=kwargs.get('land_v', ''),
             TELF1=kwargs.get('telefon', ''),
             MITNR=kwargs.get('mitnr', ''),
+            UNRS=kwargs.get('unrs', ''),
             ART=u'V',
             SMTP_ADDR=kwargs.get('email', '')
         )
@@ -261,6 +263,10 @@ class SAPAPI(object):
         return result
 
     def resetPassword(self, email):
+        """
+        Sendet eine Passwort-Reset-Anfrage an SAP
+        Gibt einen Passcode zurück (EX_PASSKEY), der als temporäres Passwort verwendet wird
+        """
         client = self.client(self.RESET_PASSWORD_URL)
         result = client.service.Z_ETEM_IMP_RESET_PASSWORD(IP_USER=email)
         return result
@@ -271,13 +277,19 @@ class SAPAPI(object):
         return result
 
     def getPassword(self, email, password):
-        #MOCKUP
-        return True
-        ##
+        """
+        Prüft, ob Email und Passwort korrekt sind
+        Gibt True zurück, wenn Login gültig ist, sonst False
+        """
         client = self.client(self.GET_PASSWORD_URL)
         result = client.service.Z_ETEM_IMP_GET_PASSWORD(IP_USER=email, IP_PASSWORD=password)
+        
+        # SAP gibt "Login gültig" zurück wenn Zugangsdaten korrekt sind
         if result.EX_MESSAGE == u'Login g\xfcltig':
+            log.info('Successful login for user %s' % email)
             return True
+        
+        log.warning('Failed login attempt for user %s' % email)
         return False
 
     def createOrder(self, email, artikel):
