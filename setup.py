@@ -13,13 +13,12 @@ requirements = [
     'zope.component',
     'zope.interface',
     'plone.memoize',
-    'suds-jurko',
-    'pytest',
+    'suds',
     'zeep',
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'pytest',
 ]
 
 setup(
