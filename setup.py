@@ -26,6 +26,7 @@ setup(
     version='1.0.0a0',
     description="API for communicating with SAP-SHOP-API",
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/x-rst',
     author="Christian Klinger",
     author_email='ck@novareto.de',
     url='https://github.com/goschtl/sapshopapi',
