@@ -1,0 +1,1 @@
+Switched dependency from `suds-jurko` to `suds` and moved `pytest` to test requirements.
