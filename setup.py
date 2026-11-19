@@ -23,7 +23,7 @@ test_requirements = [
 
 setup(
     name='sapshopapi',
-    version='1.0.0a0',
+    version='2.0.0',
     description="API for communicating with SAP-SHOP-API",
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/x-rst',
