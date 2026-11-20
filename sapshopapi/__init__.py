@@ -2,4 +2,4 @@
 
 __author__ = """Christian Klinger"""
 __email__ = 'ck@novareto.de'
-__version__ = '1.0.0a0'
+__version__ = '2.0.0'
