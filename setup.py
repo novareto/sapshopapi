@@ -3,7 +3,7 @@
 
 from setuptools import setup
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
@@ -25,11 +25,11 @@ setup(
     name='sapshopapi',
     version='2.0.0',
     description="API for communicating with SAP-SHOP-API",
-    long_description=readme + '\n\n' + history,
-    long_description_content_type='text/x-rst',
+    long_description=readme,
+    long_description_content_type='text/markdown',
     author="Christian Klinger",
     author_email='ck@novareto.de',
-    url='https://github.com/goschtl/sapshopapi',
+    url='https://github.com/novareto/sapshopapi',
     packages=[
         'sapshopapi',
     ],
@@ -45,13 +45,10 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
     ],
     test_suite='tests',
     tests_require=test_requirements
