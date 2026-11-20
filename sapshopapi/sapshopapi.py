@@ -99,7 +99,7 @@ class SAPAPI(object):
 
     def client(self, MET_URL):
         """
-        This method retuns an ZEEP Client you have to Provide the SOAP URL 
+        This method retuns an ZEEP Client you have to Provide the SOAP URL
         """
         session = Session()
         session.auth = HTTPBasicAuth("xxwsn", "novareto")
@@ -158,18 +158,19 @@ class SAPAPI(object):
         # Types
         factory = client.type_factory('ns0')
         user = factory.ZIMP_S_CREATE_USER(
-            ANRED=kwargs.get('anrede', ''), 
-            NAME1=kwargs.get('name1', ''), 
-            NAME2=kwargs.get('name2', ''), 
-            NAME3=kwargs.get('name3', ''), 
-            NAME4=kwargs.get('name4', ''), 
-            ORT01=kwargs.get('ort', ''), 
+            ANRED=kwargs.get('anrede', ''),
+            NAME1=kwargs.get('name1', ''),
+            NAME2=kwargs.get('name2', ''),
+            NAME3=kwargs.get('name3', ''),
+            NAME4=kwargs.get('name4', ''),
+            ORT01=kwargs.get('ort', ''),
             STRAS=kwargs.get('strasse', ''),
             PSTLZ=kwargs.get('plz', ''),
             LAND1=kwargs.get('land', ''),
             TELF1=kwargs.get('telefon', ''),
+            UNRS=kwargs.get("unrs", "") or "",
             MITNR=kwargs.get('mitnr', ''),
-            ART=u'R', 
+            ART=u'R',
             SMTP_ADDR=kwargs.get('email', '')
         )
         v_factory = client.type_factory('ns0')
@@ -184,13 +185,14 @@ class SAPAPI(object):
             PSTLZ=kwargs.get('plz_v', ''),
             LAND1=kwargs.get('land_v', ''),
             TELF1=kwargs.get('telefon', ''),
+            UNRS=kwargs.get("unrs", "") or "",
             MITNR=kwargs.get('mitnr', ''),
             ART=u'V',
             SMTP_ADDR=kwargs.get('email', '')
         )
         ul = factory.ZIMP_T_CREATE_USER(item=[user])
         if kwargs.get('versand'):
-            ul = factory.ZIMP_T_CREATE_USER(item=[user, versand]) 
+            ul = factory.ZIMP_T_CREATE_USER(item=[user, versand])
         result = client.service.Z_ETEM_IMP_CREATE_USER(IP_PASSWORD=kwargs.get('passwort'), IT_USER=ul)
         log.info('Added User %s' % kwargs.get('email'))
         return result
@@ -199,18 +201,19 @@ class SAPAPI(object):
         client = self.client(self.UPDATE_USER_URL)
         factory = client.type_factory('ns0')
         user = factory.ZIMP_S_UPDATE_USER(
-            ANRED=kwargs.get('anrede', ''), 
-            NAME1=kwargs.get('name1', ''), 
-            NAME2=kwargs.get('name2', ''), 
-            NAME3=kwargs.get('name3', ''), 
-            NAME4=kwargs.get('name4', ''), 
-            ORT01=kwargs.get('ort', ''), 
+            ANRED=kwargs.get('anrede', ''),
+            NAME1=kwargs.get('name1', ''),
+            NAME2=kwargs.get('name2', ''),
+            NAME3=kwargs.get('name3', ''),
+            NAME4=kwargs.get('name4', ''),
+            ORT01=kwargs.get('ort', ''),
             STRAS=kwargs.get('strasse', ''),
             PSTLZ=kwargs.get('plz', ''),
             LAND1=kwargs.get('land', ''),
             TELF1=kwargs.get('telefon', ''),
+            UNRS=kwargs.get("unrs", "") or "",
             MITNR=kwargs.get('mitnr', ''),
-            ART=u'R', 
+            ART=u'R',
         )
         v_factory = client.type_factory('ns0')
         versand = v_factory.ZIMP_S_UPDATE_USER(
@@ -224,6 +227,7 @@ class SAPAPI(object):
             PSTLZ=kwargs.get('plz_v', ''),
             LAND1=kwargs.get('land_v', ''),
             TELF1=kwargs.get('telefon', ''),
+            UNRS=kwargs.get("unrs", "") or "",
             MITNR=kwargs.get('mitnr', ''),
             ART=u'V',
         )
